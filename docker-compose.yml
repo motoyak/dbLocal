@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  mariadb:
+    restart: always
+    image: mariadb:10.3
+    build: ./mariadb
+    env_file: .env
+    ports:
+      - 3306:3306
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    command:
+      --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  phpmyadmin:
+    restart: always
+    image: phpmyadmin/phpmyadmin
+    env_file: .env
+    ports:
+      - 8080:80
+    volumes:
+      - /tmp/phpmyadmin/sessions:/sessions
+    links:
+      - mariadb:db
+  redis:
+    restart: always
+    image: redis:latest
+    volumes:
+      - /vagrant_data/redis:/data
+    ports:
+      - 6379:6379
+    command: redis-server --appendonly yes
+
+volumes:
+  mariadb_data:
